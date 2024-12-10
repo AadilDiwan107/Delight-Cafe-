@@ -1,0 +1,42 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Hero Section */
+.hero {
+    background: url('coffee-hero.jpg') no-repeat center center;
+    background-size: cover;
+    color: white;
+    padding: 100px 0;
+}
+
+/* Navbar */
+.navbar {
+    margin-bottom: 20px;
+}
+
+/* Footer */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 10px 0;
+}
+
+/* Card Styles */
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* About Us Page */
+h4 {
+    margin-top: 20px;
+}
+
+/* Responsive Styling */
+@media (max-width: 767px) {
+    .hero {
+        padding: 60px 0;
+    }
+}
