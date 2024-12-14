@@ -93,52 +93,52 @@
         <!-- 10 Tables for booking -->
         <div class="table available" id="table-1">
             <span>Table 1</span>
-            <button onclick="bookTable(1)">Book</button>
+            <button onclick="bookTable(1)">2 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-2">
             <span>Table 2</span>
-            <button onclick="bookTable(2)">Book</button>
+            <button onclick="bookTable(2)">2 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-3">
             <span>Table 3</span>
-            <button onclick="bookTable(3)">Book</button>
+            <button onclick="bookTable(3)">2 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-4">
             <span>Table 4</span>
-            <button onclick="bookTable(4)">Book</button>
+            <button onclick="bookTable(4)">4 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-5">
             <span>Table 5</span>
-            <button onclick="bookTable(5)">Book</button>
+            <button onclick="bookTable(5)">4 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-6">
             <span>Table 6</span>
-            <button onclick="bookTable(6)">Book</button>
+            <button onclick="bookTable(6)">4 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-7">
             <span>Table 7</span>
-            <button onclick="bookTable(7)">Book</button>
+            <button onclick="bookTable(7)">6 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-8">
             <span>Table 8</span>
-            <button onclick="bookTable(8)">Book</button>
+            <button onclick="bookTable(8)">6 person</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-9">
             <span>Table 9</span>
-            <button onclick="bookTable(9)">Book</button>
+            <button onclick="bookTable(9)">Family</button>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-10">
             <span>Table 10</span>
-            <button onclick="bookTable(10)">Book</button>
+            <button onclick="bookTable(10)">Family</button>
             <div class="table-status">Available</div>
         </div>
     </div>
@@ -146,7 +146,7 @@
     <div class="status">
         <p>Total Tables: <span id="total-tables">10</span></p>
         <p>Available Tables: <span id="available-tables">10</span></p>
-        <p>Occupied Tables: <span id="occupied-tables">0</span></p>
+        <p>Occupied Tables: <span id="booked-tables">0</span></p>
     </div>
 
     <!-- Table Booking Section -->
@@ -185,7 +185,7 @@
     <script>
         let totalTables = 10;
         let availableTables = 10;
-        let occupiedTables = 0;
+        let booked = 0;
         const bookedTables = [];
 
         // Function to handle table booking
@@ -215,7 +215,7 @@
 
             // Update table counts
             availableTables--;
-            occupiedTables++;
+            booked++;
 
             // Display booked tables
             displayBookedTables();
@@ -260,7 +260,7 @@
 
                 // Update table counts
                 availableTables++;
-                occupiedTables--;
+                booked--;
 
                 // Display updated booking list
                 displayBookedTables();
@@ -273,7 +273,7 @@
         // Update the status display
         function updateStatus() {
             document.getElementById('available-tables').textContent = availableTables;
-            document.getElementById('occupied-tables').textContent = occupiedTables;
+            document.getElementById('occupied-tables').textContent = booked;
         }
 
     </script>
