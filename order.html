@@ -115,7 +115,7 @@
             <span class="item-price">₹100</span>
             <button class="add-to-cart" onclick="addToCart('Tea', 100)">Add to Cart</button>
         </div>
-        <div class="menu -item">
+        <div class="menu-item">
             <span class="item-name">Smoothie</span>
             <span class="item-price">₹200</span>
             <button class="add-to-cart" onclick="addToCart('Smoothie', 200)">Add to Cart</button>
@@ -167,18 +167,32 @@
     </div>
 
     <script>
-        let cart = [];
-        let total = 0;
+        // Initialize cart and total from localStorage
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let total = localStorage.getItem('total') ? parseFloat(localStorage.getItem('total')) : 0;
+
+        // Update the cart display on page load
+        updateCart();
 
         function addToCart(itemName, itemPrice) {
             cart.push({ name: itemName, price: itemPrice });
             total += itemPrice;
+
+            // Save updated cart and total to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('total', total);
+
             updateCart();
         }
 
         function removeFromCart(index) {
             total -= cart[index].price; // Subtract the price of the item being removed
             cart.splice(index, 1); // Remove the item from the cart
+
+            // Save updated cart and total to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('total', total);
+
             updateCart();
         }
 
@@ -200,7 +214,7 @@
                 itemDiv.appendChild(removeButton); // Append the remove button to the item div
                 cartItemsDiv.appendChild(itemDiv);
             });
-           
+
             // Update total price display
             document.getElementById('total-price').textContent = `Total: ₹ ${total}`;
         }
