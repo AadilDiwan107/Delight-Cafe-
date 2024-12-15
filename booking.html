@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,27 +88,6 @@
     </style>
 </head>
 <body>
-<!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Delight CAFE</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="order.html">Order</a></li>
-                    <li class="nav-item"><a class="nav-link" href="booking.html">Book Your Table</a></li>
-                    <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     <h1>Café Table Availability & Booking</h1>
     <div class="tables-container">
         <!-- 10 Tables for booking -->
@@ -136,7 +116,7 @@
             <button onclick="bookTable(5)">4 person</button>
             <div class="table-status">Available</div>
         </div>
-        <div class="table available" id="table-6">
+        <div class=" table available" id="table-6">
             <span>Table 6</span>
             <button onclick="bookTable(6)">4 person</button>
             <div class="table-status">Available</div>
@@ -201,14 +181,7 @@
             <div id="booked-tables-list"></div>
         </div>
     </div>
-<!-- footer section -->
-    
-    <footer class="bg-dark text-white text-center py-3">
-    <p>&copy; 2024 Coffee Shop. All rights reserved.</p>
-    <a href="#" class="text-white me-3">Facebook</a>
-    <a href="#" class="text-white me-3">Instagram</a>
-    <a href="#" class="text-white">Twitter</a>
-</footer>
+
     <script>
         let totalTables = 10;
         let availableTables = 10;
@@ -245,7 +218,7 @@
             const name = document.getElementById('name').value;
             const time = document.getElementById('time').value;
             const tableNumber = document.getElementById('table-select').value;
-            const password = document.getElementById('password').value;
+ const password = document.getElementById('password').value;
 
             if (!name || !time || !tableNumber || !password) {
                 alert('Please fill in all fields!');
