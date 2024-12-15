@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,8 +115,8 @@
             <button onclick="bookTable(5)">4 person</button>
             <div class="table-status">Available</div>
         </div>
-        <div class=" table available" id="table-6">
-            <span>Table 6</span>
+        <div class="table available" id="table-6">
+            <span>Table  6</span>
             <button onclick="bookTable(6)">4 person</button>
             <div class="table-status">Available</div>
         </div>
@@ -218,10 +217,16 @@
             const name = document.getElementById('name').value;
             const time = document.getElementById('time').value;
             const tableNumber = document.getElementById('table-select').value;
- const password = document.getElementById('password').value;
+            const password = document.getElementById('password').value;
 
             if (!name || !time || !tableNumber || !password) {
                 alert('Please fill in all fields!');
+                return;
+            }
+
+            // Check if the table is already booked
+            if (tableStatus[`table-${tableNumber}`] === 'occupied') {
+                alert('This table is already booked. Please select another table.');
                 return;
             }
 
