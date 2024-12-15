@@ -1,4 +1,4 @@
-e<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -117,7 +117,7 @@ e<!DOCTYPE html>
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-6">
-            <span>Table 6</span>
+            <span> Table 6</span>
             <button onclick="bookTable(6)">4 person</button>
             <div class="table-status">Available</div>
         </div>
@@ -186,7 +186,21 @@ e<!DOCTYPE html>
         let totalTables = 10;
         let availableTables = 10;
         let booked = 0;
-        const bookedTables = [];
+        const bookedTables = JSON.parse(localStorage.getItem('bookedTables')) || [];
+
+        // Load existing bookings from localStorage
+        window.onload = function() {
+            bookedTables.forEach(booking => {
+                const tableNumber = booking.tableNumber;
+                const table = document.getElementById(`table-${tableNumber}`);
+                const statusDiv = table.querySelector('.table-status');
+                table.classList.remove('available');
+                table.classList.add('occupied');
+                statusDiv.textContent = 'Occupied';
+            });
+            displayBookedTables();
+            updateStatus();
+        };
 
         // Function to handle table booking
         document.getElementById('booking-form').addEventListener('submit', function(e) {
@@ -205,6 +219,7 @@ e<!DOCTYPE html>
             // Add customer details and password to the booking list
             const bookingDetails = { name, time, tableNumber, password };
             bookedTables.push(bookingDetails);
+            localStorage.setItem('bookedTables', JSON.stringify(book edTables));
 
             // Update table status
             const table = document.getElementById(`table-${tableNumber}`);
@@ -249,6 +264,7 @@ e<!DOCTYPE html>
             if (password === booking.password) {
                 // Remove the booking from the list
                 bookedTables.splice(index, 1);
+                localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
 
                 // Update the table status back to available
                 const tableNumber = booking.tableNumber;
@@ -273,7 +289,7 @@ e<!DOCTYPE html>
         // Update the status display
         function updateStatus() {
             document.getElementById('available-tables').textContent = availableTables;
-            document.getElementById('occupied-tables').textContent = booked;
+            document.getElementById('booked-tables').textContent = booked;
         }
 
     </script>
