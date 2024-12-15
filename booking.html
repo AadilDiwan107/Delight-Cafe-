@@ -187,17 +187,26 @@
         let availableTables = 10;
         let booked = 0;
         const bookedTables = JSON.parse(localStorage.getItem('bookedTables')) || [];
+        const tableStatus = JSON.parse(localStorage.getItem('tableStatus')) || {};
 
-        // Load existing bookings from localStorage
+        // Load existing bookings and table statuses from localStorage
         window.onload = function() {
-            bookedTables.forEach(booking => {
-                const tableNumber = booking.tableNumber;
-                const table = document.getElementById(`table-${tableNumber}`);
+            // Set up table statuses
+            for (let i = 1; i <= totalTables; i++) {
+                const table = document.getElementById(`table-${i}`);
                 const statusDiv = table.querySelector('.table-status');
-                table.classList.remove('available');
-                table.classList.add('occupied');
-                statusDiv.textContent = 'Occupied';
-            });
+                if (tableStatus[`table-${i}`] === 'occupied') {
+                    table.classList.remove('available');
+                    table.classList.add('occupied');
+                    statusDiv.textContent = 'Occupied';
+                    availableTables--;
+                    booked++;
+                } else {
+                    table.classList.remove('occupied');
+                    table.classList.add('available');
+                    statusDiv.textContent = 'Available';
+                }
+            }
             displayBookedTables();
             updateStatus();
         };
@@ -231,6 +240,10 @@
             // Update table counts
             availableTables--;
             booked++;
+
+            // Save table status in localStorage
+            tableStatus[`table-${tableNumber}`] = 'occupied';
+            localStorage.setItem('tableStatus', JSON.stringify(tableStatus));
 
             // Display booked tables
             displayBookedTables();
@@ -277,6 +290,10 @@
                 // Update table counts
                 availableTables++;
                 booked--;
+
+                // Update table status in localStorage
+                tableStatus[`table-${tableNumber}`] = 'available';
+                localStorage.setItem('tableStatus', JSON.stringify(tableStatus));
 
                 // Display updated booking list
                 displayBookedTables();
