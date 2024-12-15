@@ -55,7 +55,7 @@
         }
         .table-status {
             position: absolute;
-            bottom: 10px;  /* Position at the bottom */
+            bottom: 10px;  
             font-size: 12px;
             font-weight: bold;
             color: white;
@@ -117,7 +117,7 @@
             <div class="table-status">Available</div>
         </div>
         <div class="table available" id="table-6">
-            <span> Table 6</span>
+            <span>Table 6</span>
             <button onclick="bookTable(6)">4 person</button>
             <div class="table-status">Available</div>
         </div>
@@ -219,7 +219,7 @@
             // Add customer details and password to the booking list
             const bookingDetails = { name, time, tableNumber, password };
             bookedTables.push(bookingDetails);
-            localStorage.setItem('bookedTables', JSON.stringify(book edTables));
+            localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
 
             // Update table status
             const table = document.getElementById(`table-${tableNumber}`);
