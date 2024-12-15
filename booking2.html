@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Table Availability & Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .tables-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .table {
+            width: 100px;
+            height: 120px;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+        .table.occupied {
+            background-color: #f44336;
+        }
+        .table.available {
+            background-color: #4CAF50;
+        }
+        .table button {
+            background-color: #fff;
+            border: none;
+            color: #4CAF50;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        .table button:hover {
+            background-color: #e8e8e8;
+        }
+        .table-status {
+            position: absolute;
+            bottom: 10px;  
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .status {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .booking-section {
+            margin-top: 30px;
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .booking-list {
+            margin-top: 20px;
+        }
+        .booking-item {
+            background-color: #ffffff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <h1>Café Table Availability & Booking</h1>
+    <div id="customer-name-section" style="text-align: center; margin-bottom: 20px;"></div>
+    <div class="tables-container">
+        <!-- 10 Tables for booking -->
+        <div class="table available" id="table-1">
+            <span>Table 1</span>
+            <button onclick="bookTable(1)">2 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-2">
+            <span>Table 2</span>
+            <button onclick="bookTable(2)">2 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-3">
+            <span>Table 3</span>
+            <button onclick="bookTable(3)">2 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-4">
+            <span>Table 4</span>
+            <button onclick="bookTable(4)">4 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-5">
+            <span>Table 5</span>
+            <button onclick="bookTable(5)">4 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table -6">
+            <span>Table 6</span>
+            <button onclick="bookTable(6)">4 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-7">
+            <span>Table 7</span>
+            <button onclick="bookTable(7)">6 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-8">
+            <span>Table 8</span>
+            <button onclick="bookTable(8)">6 person</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-9">
+            <span>Table 9</span>
+            <button onclick="bookTable(9)">Family</button>
+            <div class="table-status">Available</div>
+        </div>
+        <div class="table available" id="table-10">
+            <span>Table 10</span>
+            <button onclick="bookTable(10)">Family</button>
+            <div class="table-status">Available</div>
+        </div>
+    </div>
+
+    <div class="status">
+        <p>Total Tables: <span id="total-tables">10</span></p>
+        <p>Available Tables: <span id="available-tables">10</span></p>
+        <p>Booked Tables: <span id="booked-tables">0</span></p>
+    </div>
+
+    <!-- Table Booking Section -->
+    <div class="booking-section">
+        <h2>Book a Table</h2>
+        <form id="booking-form">
+            <label for="time">Booking Time: </label>
+            <input type="time" id="time" required><br><br>
+            <label for="table">Select Table: </label>
+            <select id="table-select" required>
+                <option value="" disabled selected>Select a table</option>
+                <option value="1">Table 1</option>
+                <option value="2">Table 2</option>
+                <option value="3">Table 3</option>
+                <option value="4">Table 4</option>
+                <option value="5">Table 5</option>
+                <option value="6">Table 6</option>
+                <option value="7">Table 7</option>
+                <option value="8">Table 8</option>
+                <option value="9">Table 9</option>
+                <option value="10">Table 10</option>
+            </select><br><br>
+            <label for="password">Security Password: </label>
+            <input type="password" id="password" required><br><br>
+            <button type="submit">Book Table</button>
+        </form>
+
+        <div class="booking-list">
+            <h3>Booked Tables</h3>
+            <div id="booked-tables-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let totalTables = 10;
+        let availableTables = 10;
+        let booked = 0;
+        const bookedTables = JSON.parse(localStorage.getItem('bookedTables')) || [];
+        const tableStatus = JSON.parse(localStorage.getItem('tableStatus')) || {};
+        let customerName = localStorage.getItem('customerName');
+
+        // Load existing bookings and table statuses from localStorage
+        window.onload = function() {
+            if (!customerName) {
+                customerName = prompt("Please enter your name:");
+                if (customerName) {
+                    localStorage.setItem('customerName', customerName);
+                } else {
+                    alert("Name is required to proceed.");
+                    return;
+                }
+            }
+            document.getElementById('customer-name-section').textContent = `Welcome, ${customerName}!`;
+
+            // Set up table statuses
+            for (let i = 1; i <= totalTables; i++) {
+                const table = document.getElementById(`table-${i}`);
+                const statusDiv = table.querySelector('.table-status');
+                if (tableStatus[`table-${i}`] === 'occupied') {
+                    table.classList.remove('available');
+                    table.classList.add('occupied');
+                    statusDiv.textContent = 'Occupied';
+                    availableTables--;
+                    booked++;
+                } else {
+                    table.classList.remove('occupied');
+                    table.classList.add('available');
+                    statusDiv.textContent = 'Available';
+                }
+            }
+            displayBookedTables();
+            updateStatus();
+        };
+
+        // Function to handle table booking
+        document.getElementById('booking-form').addEventListener ```javascript
+('submit', function(e) {
+            e.preventDefault();
+
+            const time = document.getElementById('time').value;
+            const tableNumber = document.getElementById('table-select').value;
+            const password = document.getElementById('password').value;
+
+            if (!time || !tableNumber || !password) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            // Check if the table is already booked
+            if (tableStatus[`table-${tableNumber}`] === 'occupied') {
+                alert('This table is already booked. Please select another table.');
+                return;
+            }
+
+            // Add customer details and password to the booking list
+            const bookingDetails = { name: customerName, time, tableNumber, password };
+            bookedTables.push(bookingDetails);
+            localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
+
+            // Update table status
+            const table = document.getElementById(`table-${tableNumber}`);
+            const statusDiv = table.querySelector('.table-status');
+            table.classList.remove('available');
+            table.classList.add('occupied');
+            statusDiv.textContent = 'Occupied';
+
+            // Update table counts
+            availableTables--;
+            booked++;
+
+            // Save table status in localStorage
+            tableStatus[`table-${tableNumber}`] = 'occupied';
+            localStorage.setItem('tableStatus', JSON.stringify(tableStatus));
+
+            // Display booked tables
+            displayBookedTables();
+
+            // Reset form
+            document.getElementById('booking-form').reset();
+            updateStatus();
+        });
+
+        // Display booked tables
+        function displayBookedTables() {
+            const bookedTablesList = document.getElementById('booked-tables-list');
+            bookedTablesList.innerHTML = ''; // Clear previous list
+
+            bookedTables.forEach((booking, index) => {
+                const div = document.createElement('div');
+                div.classList.add('booking-item');
+                div.innerHTML = ` 
+                    <span>Table ${booking.tableNumber} - ${booking.name} at ${booking.time}</span>
+                    <button onclick="cancelBooking(${index})">Cancel</button>
+                `;
+                bookedTablesList.appendChild(div);
+            });
+        }
+
+        // Cancel booking function with password check
+        function cancelBooking(index) {
+            const booking = bookedTables[index];
+            const password = prompt("Enter your security password to cancel the booking:");
+
+            if (password === booking.password) {
+                // Remove the booking from the list
+                bookedTables.splice(index, 1);
+                localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
+
+                // Update the table status back to available
+                const tableNumber = booking.tableNumber;
+                const table = document.getElementById(`table-${tableNumber}`);
+                const statusDiv = table.querySelector('.table-status');
+                table.classList.remove('occupied');
+                table.classList.add('available');
+                statusDiv.textContent = 'Available';
+
+                // Update table counts
+                availableTables++;
+                booked--;
+
+                // Update table status in localStorage
+                tableStatus[`table-${tableNumber}`] = 'available';
+                localStorage.setItem('tableStatus', JSON.stringify(tableStatus));
+
+                // Display updated booking list
+                displayBookedTables();
+                updateStatus();
+            } else {
+                alert("Incorrect password. Booking cancellation failed.");
+            }
+        }
+
+        // Update the status display
+        function updateStatus() {
+            document.getElementById('available-tables').textContent = availableTables;
+            document.getElementById('booked-tables').textContent = booked;
+        }
+    </script>
+
+</body>
+</html>
