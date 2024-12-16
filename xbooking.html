@@ -1,0 +1,159 @@
+<script>
+    let totalTables = 10;
+    let availableTables = 10;
+    let booked = 0;
+    const bookedTables = JSON.parse(localStorage.getItem('bookedTables')) || [];
+    const tableStatus = JSON.parse(localStorage.getItem('tableStatus')) || {};
+
+    // Load existing bookings and table statuses from localStorage
+    window.onload = function() {
+        // Set up table statuses
+        for (let i = 1; i <= totalTables; i++) {
+            const table = document.getElementById(`table-${i}`);
+            const statusDiv = table.querySelector('.table-status');
+            if (tableStatus[`table-${i}`] === 'occupied') {
+                table.classList.remove('available');
+                table.classList.add('occupied');
+                statusDiv.textContent = 'Occupied';
+                availableTables--;
+                booked++;
+            } else {
+                table.classList.remove('occupied');
+                table.classList.add('available');
+                statusDiv.textContent = 'Available';
+            }
+        }
+        displayBookedTables();
+        updateStatus();
+    };
+
+    // Function to handle table booking
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const time = document.getElementById('time').value;
+        const tableNumber = document.getElementById('table-select').value;
+        const password = document.getElementById('password').value;
+
+        if (!name || !time || !tableNumber || !password) {
+            alert('Please fill in all fields!');
+            return;
+        }
+
+        // Check if the table is already booked
+        if (tableStatus[`table-${tableNumber}`] === 'occupied') {
+            alert('This table is already booked. Please select another table.');
+            return;
+        }
+
+        // Add customer details and password to the booking list
+        const bookingDetails = { name, time, tableNumber, password };
+        bookedTables.push(bookingDetails);
+        localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
+
+        // Update table status
+        const table = document.getElementById(`table-${tableNumber}`);
+        const statusDiv = table.querySelector('.table-status');
+        table.classList.remove('available');
+        table.classList.add('occupied');
+        statusDiv.textContent = 'Occupied';
+
+        // Update table counts
+        availableTables--;
+        booked++;
+
+        // Save table status in localStorage
+        tableStatus[`table-${tableNumber}`] = 'occupied';
+        localStorage.setItem('tableStatus', JSON.stringify(tableStatus));
+
+        // Display booked tables
+        displayBookedTables();
+
+        // Reset form
+        document.getElementById('booking-form').reset();
+        updateStatus();
+    });
+
+    // Display booked tables
+    function displayBookedTables() {
+        const bookedTablesList = document.getElementById('booked-tables-list');
+        bookedTablesList.innerHTML = ''; // Clear previous list
+
+        bookedTables.forEach((booking, index) => {
+            const div = document.createElement('div');
+            div.classList.add('booking-item');
+            div.innerHTML = ` 
+                <span>Table ${booking.tableNumber} - ${booking.name} at ${booking.time}</span>
+                <button onclick="cancelBooking(${index})">Cancel</button>
+            `;
+            bookedTablesList.appendChild(div);
+        });
+    }
+
+    // Cancel booking function with password check
+    function cancelBooking(index) {
+        const booking = bookedTables[index];
+        const password = prompt("Enter your security password to cancel the booking:");
+
+        if (password === booking.password) {
+            // Remove the booking from the list
+            bookedTables.splice(index, 1);
+            localStorage.setItem('bookedTables', JSON.stringify(bookedTables));
+
+            // Update the table status back to available
+            const tableNumber = booking.tableNumber;
+            const table = document.getElementById(`table-${tableNumber}`);
+            const statusDiv = table.querySelector('.table-status');
+            table.classList.remove('occupied');
+            table.classList.add('available');
+            statusDiv.textContent = 'Available';
+
+            // Update table counts
+            availableTables++;
+            booked--;
+
+            // Update table status in localStorage
+            tableStatus[`table-${tableNumber}`] = 'available';
+            localStorage.setItem('tableStatus', JSON.stringify(tableStatus));
+
+            // Display updated booking list
+            displayBookedTables();
+            updateStatus();
+        } else {
+            alert("Incorrect password. Booking cancellation failed.");
+        }
+    }
+
+    // Update the status display
+    function updateStatus() {
+        document.getElementById('available-tables').textContent = availableTables;
+        document.getElementById('booked-tables').textContent = booked;
+    }
+
+    // Export the booked tables data as an XML file
+    function exportToXML() {
+        const xmlHeader = '<?xml version="1.0" encoding="UTF-8" ?>';
+        let xmlContent = '<bookings>';
+
+        bookedTables.forEach(booking => {
+            xmlContent += `<booking>
+                <name>${booking.name}</name>
+                <time>${booking.time}</time>
+                <tableNumber>${booking.tableNumber}</tableNumber>
+                <password>${booking.password}</password>
+            </booking>`;
+        });
+
+        xmlContent += '</bookings>';
+
+        const blob = new Blob([xmlHeader + xmlContent], { type: 'application/xml' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'bookings.xml';
+        link.click();
+    }
+
+    // Attach export button to the export function
+    document.getElementById('export-button').addEventListener('click', exportToXML);
+</script>
