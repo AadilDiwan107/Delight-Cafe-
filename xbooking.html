@@ -25,7 +25,7 @@ foreach ($bookings as $key => $booking) {
 }
 
 // Update the bookings.json file with the remaining bookings
-file_put_contents('bookings.json', json_encode(array_values($bookings)));
+file_put_contents('/Delight-Cafe-/bookings.json', json_encode(array_values($bookings)));
 ?>
 
 <!DOCTYPE html>
