@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'], $_POST['time']
     ];
 
     $bookings[] = $new_booking;
-    file_put_contents('bookings.json', json_encode($bookings));
+    file_put_contents('/Delight-Cafe-/bookings.json', json_encode($bookings));
 }
 
 // Handle clearing old bookings (older than 24 hours)
