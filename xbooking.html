@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_content'])) {
     ];
 
     $posts[] = $new_post;
-    file_put_contents('chat.json', json_encode($posts));
+    file_put_contents('booking.json', json_encode($posts));
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reply_content'], $_POST['post_id'])) {
