@@ -81,7 +81,7 @@ foreach ($posts as $key => $post) {
         unset($posts[$key]);
     }
 }
-file_put_contents('chat.json', json_encode(array_values($posts)));
+file_put_contents('booking.json', json_encode(array_values($posts)));
 ?>
     <?php include 'footer.php'; ?>
 </body>
