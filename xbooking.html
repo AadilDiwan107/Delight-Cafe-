@@ -87,33 +87,10 @@
     <div id="bookingsContainer">
         <!-- Bookings will be displayed here -->
     </div>
-
-    <h3>Clear Old Bookings (24 hours)</h3>
-    <button id="clearOldBookings">Clear Old Bookings</button>
 </div>
 
 <script>
-    // Load bookings from localStorage
-    function loadBookings() {
-        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-        const bookingsContainer = document.getElementById('bookingsContainer');
-        bookingsContainer.innerHTML = '';
-
-        bookings.forEach(booking => {
-            const bookingElement = document.createElement('div');
-            bookingElement.classList.add('booking');
-            bookingElement.innerHTML = `
-                <p class="author">Name: ${booking.name}</p>
-                <p>Date: ${booking.date}</p>
-                <p>Time: ${booking.time}</p>
-                <p>Number of People: ${booking.people}</p>
-                <p><em>Booked at: ${new Date(booking.timestamp * 1000).toLocaleString()}</em></p>
-            `;
-            bookingsContainer.appendChild(bookingElement);
-        });
-    }
-
-    // Add a new booking
+    // Submit the booking data to the server
     document.getElementById('bookingForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -122,39 +99,55 @@
         const time = document.getElementById('time').value;
         const people = document.getElementById('people').value;
 
-        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-        const newBooking = {
-            id: 'booking_' + Date.now(),
+        // Prepare data to send to server
+        const bookingData = {
             name: name,
             date: date,
             time: time,
-            people: people,
-            timestamp: Math.floor(Date.now() / 1000)
+            people: people
         };
 
-        bookings.push(newBooking);
-        localStorage.setItem('bookings', JSON.stringify(bookings));
-        loadBookings();
-
-        // Clear the form
-        document.getElementById('name').value = '';
-        document.getElementById('date').value = '';
-        document.getElementById('time').value = '';
-        document.getElementById('people').value = '';
+        // Send data to server using fetch (AJAX)
+        fetch('saveBooking.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Booking Successful!');
+            loadBookings(); // Refresh bookings list
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     });
 
-    // Clear bookings older than 24 hours
-    document.getElementById('clearOldBookings').addEventListener('click', function() {
-        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-        const currentTime = Math.floor(Date.now() / 1000);
-        const timeLimit = 86400; // 24 hours in seconds
+    // Load bookings from server (this would be saved in the JSON file)
+    function loadBookings() {
+        fetch('getBookings.php')
+            .then(response => response.json())
+            .then(data => {
+                const bookingsContainer = document.getElementById('bookingsContainer');
+                bookingsContainer.innerHTML = '';
 
-        const filteredBookings = bookings.filter(booking => currentTime - booking.timestamp <= timeLimit);
-        localStorage.setItem('bookings', JSON.stringify(filteredBookings));
-        loadBookings();
-    });
+                data.forEach(booking => {
+                    const bookingElement = document.createElement('div');
+                    bookingElement.classList.add('booking');
+                    bookingElement.innerHTML = `
+                        <p class="author">Name: ${booking.name}</p>
+                        <p>Date: ${booking.date}</p>
+                        <p>Time: ${booking.time}</p>
+                        <p>Number of People: ${booking.people}</p>
+                    `;
+                    bookingsContainer.appendChild(bookingElement);
+                });
+            });
+    }
 
-    // Load bookings when the page loads
+    // Initial load of bookings
     loadBookings();
 </script>
 
