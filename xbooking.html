@@ -7,114 +7,155 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f0f0f0;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-        h1 {
+
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
             text-align: center;
         }
-        .booking-form {
-            max-width: 400px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .booking-form input, .booking-form select {
+
+        input, textarea {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ccc;
             border-radius: 5px;
+            border: 1px solid #ddd;
         }
-        .booking-list {
-            margin-top: 20px;
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .booking-list table {
-            width: 100%;
-            border-collapse: collapse;
+
+        button:hover {
+            background-color: #45a049;
         }
-        .booking-list th, .booking-list td {
+
+        .booking {
             border: 1px solid #ccc;
             padding: 10px;
-            text-align: left;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .booking p {
+            margin: 5px 0;
+        }
+
+        .booking .author {
+            font-weight: bold;
+        }
+
+        .booking .details {
+            margin-left: 20px;
         }
     </style>
 </head>
 <body>
 
-<h1>Cafe Table Booking</h1>
-<div class="booking-form">
-    <input type="text" id="name" placeholder="Your Name" required>
-    <input type="date" id="date" required>
-    <input type="time" id="time" required>
-    <select id="table">
-        <option value="">Select Table</option>
-        <option value="1">Table 1</option>
-        <option value="2">Table 2</option>
-        <option value="3">Table 3</option>
-    </select>
-    <button onclick="bookTable()">Book Table</button>
-</div>
+<div class="container">
+    <h2>Cafe Table Booking</h2>
 
-<div class="booking-list">
-    <h2>Current Bookings</h2>
-    <table id="bookingTable">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Table</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Bookings will be displayed here -->
-        </tbody>
-    </table>
+    <!-- Booking Form -->
+    <form id="bookingForm">
+        <input type="text" id="name" placeholder="Enter your name" required><br>
+        <input type="date" id="date" required><br>
+        <input type="time" id="time" required><br>
+        <input type="number" id="people" placeholder="Number of People" min="1" required><br>
+        <button type="submit">Book Table</button>
+    </form>
+
+    <h3>All Bookings:</h3>
+
+    <!-- Displaying Bookings -->
+    <div id="bookingsContainer">
+        <!-- Bookings will be displayed here -->
+    </div>
+
+    <h3>Clear Old Bookings (24 hours)</h3>
+    <button id="clearOldBookings">Clear Old Bookings</button>
 </div>
 
 <script>
-    let bookings = [];
+    // Load bookings from localStorage
+    function loadBookings() {
+        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        const bookingsContainer = document.getElementById('bookingsContainer');
+        bookingsContainer.innerHTML = '';
 
-    function bookTable() {
-        const name = document.getElementById('name').value;
-        const date = document.getElementById('date').value;
-        const time = document.getElementById('time').value;
-        const table = document.getElementById('table').value;
-
-        if (name && date && time && table) {
-            const booking = { name, date, time, table };
-            bookings.push(booking);
-            displayBookings();
-            clearForm();
-            // Here you would typically send the booking to the server to save in booking.json
-        } else {
-            alert('Please fill in all fields.');
-        }
-    }
-
-    function displayBookings() {
-        const bookingTable = document.getElementById('bookingTable').getElementsByTagName('tbody')[0];
-        bookingTable.innerHTML = ''; // Clear existing bookings
-
-        bookings.forEach((booking) => {
-            const row = bookingTable.insertRow();
-            row.insertCell(0).innerText = booking.name;
-            row.insertCell(1).innerText = booking.date;
-            row.insertCell(2).innerText = booking.time;
-            row.insertCell(3).innerText = booking.table;
+        bookings.forEach(booking => {
+            const bookingElement = document.createElement('div');
+            bookingElement.classList.add('booking');
+            bookingElement.innerHTML = `
+                <p class="author">Name: ${booking.name}</p>
+                <p>Date: ${booking.date}</p>
+                <p>Time: ${booking.time}</p>
+                <p>Number of People: ${booking.people}</p>
+                <p><em>Booked at: ${new Date(booking.timestamp * 1000).toLocaleString()}</em></p>
+            `;
+            bookingsContainer.appendChild(bookingElement);
         });
     }
 
-    function clearForm() {
+    // Add a new booking
+    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const people = document.getElementById('people').value;
+
+        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        const newBooking = {
+            id: 'booking_' + Date.now(),
+            name: name,
+            date: date,
+            time: time,
+            people: people,
+            timestamp: Math.floor(Date.now() / 1000)
+        };
+
+        bookings.push(newBooking);
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        loadBookings();
+
+        // Clear the form
         document.getElementById('name').value = '';
         document.getElementById('date').value = '';
         document.getElementById('time').value = '';
-        document.getElementById('table').value = '';
-    }
+        document.getElementById('people').value = '';
+    });
+
+    // Clear bookings older than 24 hours
+    document.getElementById('clearOldBookings').addEventListener('click', function() {
+        const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        const currentTime = Math.floor(Date.now() / 1000);
+        const timeLimit = 86400; // 24 hours in seconds
+
+        const filteredBookings = bookings.filter(booking => currentTime - booking.timestamp <= timeLimit);
+        localStorage.setItem('bookings', JSON.stringify(filteredBookings));
+        loadBookings();
+    });
+
+    // Load bookings when the page loads
+    loadBookings();
 </script>
 
 </body>
