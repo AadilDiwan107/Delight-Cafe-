@@ -1,157 +1,110 @@
-<?php
-// Read the current booking data from the 'bookings.json' file
-$bookings = json_decode(file_get_contents('bookings.json'), true);
-
-// Handle new table bookings
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'], $_POST['time'], $_POST['people'])) {
-    $new_booking = [
-        'id' => uniqid(),
-        'name' => $_POST['name'],
-        'time' => $_POST['time'],
-        'people' => $_POST['people'],
-        'timestamp' => time(),
-    ];
-
-    $bookings[] = $new_booking;
-    file_put_contents('/Delight-Cafe-/bookings.json', json_encode($bookings));
-}
-
-// Handle clearing old bookings (older than 24 hours)
-$time_limit = 86400; // 24 hours in seconds
-foreach ($bookings as $key => $booking) {
-    if (time() - $booking['timestamp'] > $time_limit) {
-        unset($bookings[$key]);
-    }
-}
-
-// Update the bookings.json file with the remaining bookings
-file_put_contents('/Delight-Cafe-/bookings.json', json_encode(array_values($bookings)));
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cafe Table Booking</title>
+    <title>User Input to JSON Example</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 80%;
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        input, textarea, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
         table {
-            width: 100%;
-            margin-top: 30px;
+            width: 50%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
-
         th, td {
-            padding: 10px;
+            border: 1px solid #ddd;
+            padding: 8px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
         }
-
         th {
             background-color: #f2f2f2;
         }
-
-        .booking-details {
-            margin: 10px 0;
+        .remove-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Table Booking</h2>
+    <h1>User Input Form</h1>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br><br>
 
-    <!-- Booking Form -->
-    <form method="POST">
-        <input type="text" name="name" placeholder="Enter your name" required><br>
-        <input type="time" name="time" required><br>
-        <input type="number" name="people" placeholder="Number of people" min="1" required><br>
-        <button type="submit">Book a Table</button>
+        <label for="age">Age:</label>
+        <input type="number" id="age" required><br><br>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" required><br><br>
+
+        <button type="submit">Submit</button>
     </form>
 
-    <h3>All Booked Tables:</h3>
-
-    <!-- Display Booked Tables -->
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Time</th>
-            <th>People</th>
-            <th>Booking Time</th>
-        </tr>
-        <?php foreach ($bookings as $booking): ?>
+    <h2>Stored Data</h2>
+    <table id="dataTable">
+        <thead>
             <tr>
-                <td><?php echo htmlspecialchars($booking['name']); ?></td>
-                <td><?php echo htmlspecialchars($booking['time']); ?></td>
-                <td><?php echo htmlspecialchars($booking['people']); ?></td>
-                <td><?php echo date('Y-m-d H:i:s', $booking['timestamp']); ?></td>
+                <th>Name</th>
+                <th>Age</th>
+                <th>City</th>
+                <th>Action</th> <!-- Column for the Remove button -->
             </tr>
-        <?php endforeach; ?>
+        </thead>
+        <tbody>
+            <!-- User data will be inserted here -->
+        </tbody>
     </table>
 
-    <h3>Clear Old Bookings:</h3>
-    <p>Old bookings (more than 24 hours old) will be automatically cleared. You can also clear them manually by clicking the button below:</p>
-    <button onclick="clearOldBookings()">Clear Old Bookings</button>
+    <script>
+        // Function to handle form submission
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-</div>
+            // Get input values
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const city = document.getElementById('city').value;
 
-<script>
-    // Clear old bookings manually
-    function clearOldBookings() {
-        fetch('clearOldBookings.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Old bookings cleared.');
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    alert('Error clearing old bookings.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-</script>
+            // Create a JSON object
+            const userData = {
+                name: name,
+                age: parseInt(age), // Convert age to a number
+                city: city
+            };
+
+            // Create a new row in the table
+            const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            const newRow = tableBody.insertRow();
+
+            // Insert new cells for each property
+            const nameCell = newRow.insertCell(0);
+            const ageCell = newRow.insertCell(1);
+            const cityCell = newRow.insertCell(2);
+            const actionCell = newRow.insertCell(3); // Cell for the Remove button
+
+            // Set the cell values
+            nameCell.textContent = userData.name;
+            ageCell.textContent = userData.age;
+            cityCell.textContent = userData.city;
+
+            // Create a Remove button
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.className = 'remove-btn';
+            removeButton.onclick = function() {
+                tableBody.deleteRow(newRow.rowIndex - 1); // Remove the row
+            };
+
+            // Append the Remove button to the action cell
+            actionCell.appendChild(removeButton);
+
+            // Clear the form fields
+            document.getElementById('userForm').reset();
+        });
+    </script>
 
 </body>
 </html>
