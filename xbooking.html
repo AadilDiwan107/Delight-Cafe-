@@ -1,88 +1,157 @@
 <?php
-//session_start();
-//if (!isset($_SESSION['username'])) {
-    //header("Location: login.php");
-  //  exit();
-//}
+// Read the current booking data from the 'bookings.json' file
+$bookings = json_decode(file_get_contents('bookings.json'), true);
 
-$posts = json_decode(file_get_contents('chat.json'), true);
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_content'])) {
-    $new_post = [
+// Handle new table bookings
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'], $_POST['time'], $_POST['people'])) {
+    $new_booking = [
         'id' => uniqid(),
-        'content' => $_POST['post_content'],
-        'author' => $_SESSION['username'],
+        'name' => $_POST['name'],
+        'time' => $_POST['time'],
+        'people' => $_POST['people'],
         'timestamp' => time(),
-        'replies' => []
     ];
 
-    $posts[] = $new_post;
-    file_put_contents('booking.json', json_encode($posts));
+    $bookings[] = $new_booking;
+    file_put_contents('bookings.json', json_encode($bookings));
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reply_content'], $_POST['post_id'])) {
-    foreach ($posts as &$post) {
-        if ($post['id'] === $_POST['post_id']) {
-            $post['replies'][] = [
-                'content' => $_POST['reply_content'],
-                'author' => $_SESSION['username'],
-                'timestamp' => time()
-            ];
-            break;
-        }
+// Handle clearing old bookings (older than 24 hours)
+$time_limit = 86400; // 24 hours in seconds
+foreach ($bookings as $key => $booking) {
+    if (time() - $booking['timestamp'] > $time_limit) {
+        unset($bookings[$key]);
     }
-
-    file_put_contents('chat.json', json_encode($posts));
 }
+
+// Update the bookings.json file with the remaining bookings
+file_put_contents('bookings.json', json_encode(array_values($bookings)));
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Forum</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Table Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .booking-details {
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+
 <div class="container">
-<h2>Welcome, <?php echo $_SESSION['username']; ?></h2>
+    <h2>Table Booking</h2>
 
-<form method="POST">
-    <textarea name="post_content" placeholder="Share your idea..." required></textarea><br/>
-    <button type="submit">Post</button>
-</form>
-
-<h3>Posts:</h3>
-
-<?php foreach ($posts as $post): ?>
-<div style='border:1px solid #ccc; padding:10px; margin-bottom:10px;'>
-    <p><strong><?php echo htmlspecialchars($post['author']); ?></strong>: <?php echo htmlspecialchars($post['content']); ?></p>
-
-    <?php foreach ($post['replies'] as $reply): ?>
-        <p><em><?php echo htmlspecialchars($reply['author']); ?></em>: <?php echo htmlspecialchars($reply['content']); ?></p>
-    <?php endforeach; ?>
-
-    <form method='POST'>
-        <input type='hidden' name='post_id' value='<?php echo $post["id"]; ?>'>
-        <textarea name='reply_content' placeholder='Reply...' required></textarea><br/>
-        <button type='submit'>Reply</button>
+    <!-- Booking Form -->
+    <form method="POST">
+        <input type="text" name="name" placeholder="Enter your name" required><br>
+        <input type="time" name="time" required><br>
+        <input type="number" name="people" placeholder="Number of people" min="1" required><br>
+        <button type="submit">Book a Table</button>
     </form>
 
+    <h3>All Booked Tables:</h3>
+
+    <!-- Display Booked Tables -->
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Time</th>
+            <th>People</th>
+            <th>Booking Time</th>
+        </tr>
+        <?php foreach ($bookings as $booking): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($booking['name']); ?></td>
+                <td><?php echo htmlspecialchars($booking['time']); ?></td>
+                <td><?php echo htmlspecialchars($booking['people']); ?></td>
+                <td><?php echo date('Y-m-d H:i:s', $booking['timestamp']); ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+
+    <h3>Clear Old Bookings:</h3>
+    <p>Old bookings (more than 24 hours old) will be automatically cleared. You can also clear them manually by clicking the button below:</p>
+    <button onclick="clearOldBookings()">Clear Old Bookings</button>
+
 </div>
-<?php endforeach; ?>
 
-<a href='logout.php'>Logout</a>
-
-</div>
-
-<!-- Clear old posts after 24 hours -->
-<?php
-$time_limit = 86400; // 24 hours in seconds
-foreach ($posts as $key => $post) {
-    if (time() - $post['timestamp'] > $time_limit) {
-        unset($posts[$key]);
+<script>
+    // Clear old bookings manually
+    function clearOldBookings() {
+        fetch('clearOldBookings.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Old bookings cleared.');
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert('Error clearing old bookings.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
-}
-file_put_contents('booking.json', json_encode(array_values($posts)));
-?>
-    <?php include 'footer.php'; ?>
+</script>
+
 </body>
 </html>
